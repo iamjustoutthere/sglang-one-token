@@ -1,6 +1,6 @@
 # SGLANG-06 evidence and patch record
 
-- Catalog: `reports/sglang06.md` and `properties/sglang/SCHED-P20.md` at `c6eb64fbcbb0ade8b6fc22867ef7106acb35665b`, [frozen report](https://github.com/nlp-research-rosu/bug-catalog/blob/c6eb64fbcbb0ade8b6fc22867ef7106acb35665b/reports/sglang06.md).
+- Finding ID: SGLANG-06. Related scheduling property: SCHED-P20.
 - Discovery attribution: property screening, novel at the catalog snapshot. Later run-2 K proof is separate validation work.
 - Upstream: SGLang `fd5c52588ff2399d25d31e49cf2121863cf620e3`. Source anchors: `Scheduler.init_req_max_new_tokens`, base allocator `max_new_tokens_for_memory`, `PrefillAdder.add_one_req_ignore_eos`, strict reserve comparison, FCFS waiting loop. Exact source hashes in the post and proof manifests.
 - Source license: upstream Apache-2.0 in `baseline/LICENSE` and proof `upstream/LICENSE`.
