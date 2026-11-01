@@ -1,0 +1,8 @@
+{
+  "upstream": "https://github.com/sgl-project/sglang",
+  "commit": "fd5c52588ff2399d25d31e49cf2121863cf620e3",
+  "sha256": {
+    "baseline/python/sglang/srt/managers/scheduler.py": "dec036c24820ac777fd96e16f3e32183c2b282bddcf3c8471d7b06f7d05d51ce",
+    "fix.patch": "5edf5f16ebef150f1721e02f925e29adb3ee8c36734e5fa49b48dcb7f6b46557"
+  }
+}
