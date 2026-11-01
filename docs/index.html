@@ -276,35 +276,88 @@ kbd { border: 2px solid var(--ink); padding: 0 5px; font: 700 11px var(--mono); 
 .two > div:last-child { background: var(--ink); color: var(--hazard); }
 .two small { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; opacity: .8; }
 @media (max-width: 860px) { .who2, .two { grid-template-columns: minmax(0, 1fr); } .two > div:first-child { border-right: 0; border-bottom: var(--rule); } }
+/* v6: importance + safety nets */
+.cmp { display: grid; grid-template-columns: 9em minmax(0, 1fr) minmax(0, 1fr); border: var(--rule); box-shadow: var(--slab); }
+.cmp > div { padding: 10px 12px; border-bottom: 2px solid var(--ink); border-right: 2px solid var(--ink); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.cmp > div:nth-child(3n) { border-right: 0; }
+.cmp > div:nth-last-child(-n+3) { border-bottom: 0; }
+.cmp .h { font-family: var(--display); font-weight: 400; font-size: 18px; text-transform: uppercase; background: var(--ink); color: var(--paper); }
+.cmp .h.bug { background: var(--fail); }
+.cmp .k { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
+.dot.r { background: var(--fail); } .dot.gr { background: #19c24a; }
+.meters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.meter { border: var(--rule); padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.meter .k { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.meter .bar { height: 14px; border: 2px solid var(--ink); background: var(--paper); }
+.meter .bar i { display: block; height: 100%; background: var(--ink); }
+.meter .bar.hot i { background: var(--fail); }
+.meter b { font-family: var(--display); font-weight: 400; font-size: 18px; text-transform: uppercase; }
+.nets { display: flex; flex-direction: column; border: var(--rule); box-shadow: var(--slab); }
+.net { display: grid; grid-template-columns: minmax(0, 1fr) 7.5em; border-bottom: 2px solid var(--ink); }
+.net:last-child { border-bottom: 0; }
+.net .tx { padding: 9px 12px; font-size: 14px; font-weight: 600; }
+.net .tx small { display: block; font-weight: 400; font-size: 12.5px; }
+.net .st { display: grid; place-items: center; font-family: var(--display); font-size: 16px; text-transform: uppercase; border-left: 2px solid var(--ink); background: var(--paper); color: var(--mute); transition: background .2s; }
+.net .st.pass { background: #19c24a; color: var(--ink); }
+.net .st.fail { background: var(--fail); color: var(--paper); }
+.net.proof { background: var(--hazard); }
+.net.proof .tx { font-weight: 700; }
+.caught { border: var(--rule); background: var(--ink); color: var(--paper); padding: 10px 12px; font-size: 14px; }
+.caught b { color: var(--hazard); }
+@media (max-width: 860px) { .cmp { grid-template-columns: 6.5em minmax(0, 1fr) minmax(0, 1fr); } .meters { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body>
 
+<style>
+.pts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; max-width: 40ch; }
+.pts li { position: relative; padding-left: 22px; font-size: 16px; line-height: 1.4; }
+.pts li::before { content: ""; position: absolute; left: 0; top: .42em; width: 11px; height: 11px; background: var(--ink); }
+.pts li.hi::before { background: var(--fail); }
+.pts li.ok::before { background: var(--proof); }
+.pts b { background: var(--hazard); font-weight: 700; }
+.beat { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+.say { gap: 9px; padding: 18px 22px; }
+.do { padding: 20px 22px; gap: 12px; }
+h1 { font-size: clamp(26px, 3.1vw, 44px); }
+.pts { gap: 6px; max-width: 48ch; }
+.pts li { font-size: 14.5px; }
+.room { grid-template-columns: repeat(50, 1fr); }
+@media (max-width: 860px) { .room { grid-template-columns: repeat(25, 1fr); } }
+.sec { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; border-bottom: var(--rule); padding-bottom: 2px; margin-top: 4px; align-self: flex-start; }
+</style>
+
 <header>
   <div class="strip">
     <div class="brand">One Token Wedge</div>
-    <div class="sub">How a one-slot mismatch froze an AI server, and how we proved the fix</div>
-    <div class="count" id="count">1/7</div>
+    <div class="sub">A small bug that freezes an AI server, and how a proof catches it</div>
+    <div class="count" id="count">1/3</div>
   </div>
-  <nav class="blocks" id="blocks" aria-label="Slides" style="grid-template-columns: repeat(7, 1fr)"></nav>
+  <nav class="blocks" id="blocks" aria-label="Slides" style="grid-template-columns: repeat(3, 1fr)"></nav>
 </header>
 
 <main class="stage" id="stage">
 
 <!-- 1 -->
-<section class="beat" data-name="Frozen">
+<section class="beat" data-name="The problem">
   <div class="say">
-    <span class="tag">The problem</span>
-    <h1>One request froze an AI server, and its health check <em>stayed green</em></h1>
-    <p class="lede">SGLang runs AI models for many users at once. In our test, one request reached the front of the line and never moved, so everyone behind it waited too.</p>
-    <p class="hint">Add a user, then remove the stuck one</p>
+    <span class="tag">1 · What is the problem?</span>
+    <h1>The AI server <span class="x">freezes</span> and says <em>"all good"</em></h1>
+    <ul class="pts">
+      <li>SGLang is free software that companies use to run AI chatbots for many people at once.</li>
+      <li>One request can get stuck at the front of the line and never start.</li>
+      <li>Everyone behind it waits too. Nothing crashes and no error appears.</li>
+      <li class="hi">The status light stays <b>green</b>, so no alarm goes off.</li>
+      <li>The only way out is for a person to notice and cancel the stuck request.</li>
+    </ul>
   </div>
   <div class="do">
     <div class="door">
       <div class="line" id="line" aria-live="polite"></div>
       <div class="server">
-        <div class="lamp" title="Health check passing"></div>
-        <div>Health: OK</div>
+        <div class="lamp" title="Status: OK"></div>
+        <div>Status: OK</div>
         <div class="refused" id="refused">0</div>
         <div>times refused</div>
         <div class="served" id="served">Served: 0</div>
@@ -312,174 +365,83 @@ kbd { border: 2px solid var(--ink); padding: 0 5px; font: 700 11px var(--mono); 
     </div>
     <div class="row">
       <button class="btn" id="addUser">+ Add a user</button>
-      <button class="btn hot" id="kick">Remove stuck request</button>
+      <button class="btn hot" id="kick">Cancel the stuck request</button>
       <button class="btn" id="resetQ">Reset</button>
     </div>
-    <p class="foot-note">Reproduced on a real SGLang server in 3 out of 3 runs. Removing the stuck request was the only thing that cleared the line.</p>
+    <div class="meters">
+      <div class="meter"><span class="k">How often</span><div class="bar"><i style="width:18%"></i></div><b>Rare</b></div>
+      <div class="meter"><span class="k">How bad when it hits</span><div class="bar hot"><i style="width:92%"></i></div><b>Everything stops</b></div>
+      <div class="meter"><span class="k">How easy to spot</span><div class="bar hot"><i style="width:8%"></i></div><b>Almost invisible</b></div>
+    </div>
   </div>
 </section>
 
 <!-- 2 -->
-<section class="beat" data-name="One slot" hidden>
+<section class="beat" data-name="When and why" hidden>
   <div class="say">
-    <span class="tag">What went wrong</span>
-    <h1>Two checks that disagree by <em>one slot</em></h1>
-    <p class="lede">Picture the server's memory as 600 seats, one for every word the AI reads or writes. The planner leaves 1 seat spare. The guard at the door wants more than 1, so it turns the request away from a room with nobody else in it.</p>
-    <p class="hint">Drag the question length, then try a short answer</p>
+    <span class="tag">2 · When and why does it happen?</span>
+    <h1>Two sensible rules that can <span class="x">never both</span> be met</h1>
+    <span class="sec">Why</span>
+    <ul class="pts">
+      <li>Think of the server's memory as a train with 600 seats.</li>
+      <li>The booking office fills it so that exactly <b>1 seat</b> stays empty.</li>
+      <li>The conductor only leaves when <b>2 or more</b> seats are empty.</li>
+      <li class="hi">Nobody else is on board, so nothing ever changes. The train never leaves.</li>
+    </ul>
+    <span class="sec">When</span>
+    <ul class="pts">
+      <li>Someone asks for the longest possible reply, on a quiet server with one memory-saving feature switched off.</li>
+    </ul>
+    <span class="sec">Why nobody caught it</span>
+    <ul class="pts">
+      <li>Each rule looks right alone and passed its own tests.</li>
+      <li>The promise to keep them in sync was only a code comment.</li>
+      <li>Everyday traffic never triggers it, and the light stays green.</li>
+    </ul>
   </div>
   <div class="do">
     <div class="who2">
-      <div class="p"><b>Planner</b><span>Sets the answer length. Leaves 1 seat spare.</span></div>
-      <div class="g"><b>Guard</b><span>Lets a request in only if 2 or more seats are spare.</span></div>
+      <div class="p"><b>Booking office</b><span>Fills the train, leaves 1 seat empty.</span></div>
+      <div class="g"><b>Conductor</b><span>Leaves only with 2 or more empty seats.</span></div>
     </div>
-    <div class="legend"><span><i class="c-q"></i>Question</span><span><i class="c-x"></i>Bookkeeping</span><span><i class="c-a"></i>Answer</span><span><i class="c-e"></i>Spare</span></div>
+    <div class="legend"><span><i class="c-q"></i>Your question</span><span><i class="c-x"></i>Paperwork</span><span><i class="c-a"></i>Saved for the reply</span><span><i class="c-e"></i>Empty seat</span></div>
     <div class="room" id="room"></div>
-    <label class="slider"><span>Question length</span><input type="range" id="qLen" min="20" max="590" value="560"><output id="qLenO">560</output></label>
-    <div class="row"><span class="hint" style="margin:0">Answer wanted:</span>
-      <div class="seg" id="ansMode"><button aria-pressed="true" data-v="max">As long as possible</button><button aria-pressed="false" data-v="short">Short (20 words)</button></div>
+    <label class="slider"><span>Length of your question</span><input type="range" id="qLen" min="20" max="590" value="560"><output id="qLenO">560</output></label>
+    <div class="row"><span class="hint" style="margin:0">Reply wanted:</span>
+      <div class="seg" id="ansMode"><button aria-pressed="true" data-v="max">As long as possible</button><button aria-pressed="false" data-v="short">Short</button></div>
     </div>
     <div class="tally" id="tally"></div>
   </div>
 </section>
 
 <!-- 3 -->
-<section class="beat" data-name="Always 1" hidden>
+<section class="beat" data-name="What a proof catches" hidden>
   <div class="say">
-    <span class="tag">Why it stays stuck</span>
-    <h1>Shorter questions and waiting <span class="x">both fail</span></h1>
-    <p class="lede">Any seats you free up, the planner gives to the answer, so 1 seat is spare whatever the question length. The room is already empty, so nobody will ever leave and make space.</p>
-    <div class="why"><b>Why nobody caught it</b>It needs three things at once: a request for the longest possible answer, a memory cache (normally on) switched off, and an idle server. Even then the health check stays green.</div>
-  </div>
-  <div class="do">
-    <div class="row"><div class="seg" id="chartMode"><button aria-pressed="true" data-v="old">Original code</button><button aria-pressed="false" data-v="new">With the fix</button></div></div>
-    <div class="chart"><svg id="chart" viewBox="0 0 640 330" role="img" aria-label="Spare seats versus question length"></svg></div>
-    <label class="slider"><span>Question length</span><input type="range" id="cLen" min="0" max="590" value="300"><output id="cLenO">300</output></label>
-  </div>
-</section>
-
-<!-- 4 -->
-<section class="beat" data-name="The fix" hidden>
-  <div class="say">
-    <span class="tag">The fix</span>
-    <h1>Both fixes pass the test. One of them <span class="x">removes a safety margin.</span></h1>
-    <p class="lede">The guard keeps a spare seat to absorb awkward cases when memory gets handed out. Fix A throws that seat away. Fix B has the planner leave one more seat and leaves the guard alone, which is the one-line change we made.</p>
-    <p class="hint">Pick a fix</p>
-  </div>
-  <div class="do">
-    <div class="fixes">
-      <button class="fix" id="fixA" aria-pressed="false">
-        <div class="hd">A. Relax the guard</div>
-        <div class="bd">
-          <div>Let requests in with only 1 seat spare.</div>
-          <div class="mini" id="miniA"></div>
-          <div>The request runs, and the safety seat is gone.</div>
-          <span class="stamp bad">Risky</span>
-        </div>
-      </button>
-      <button class="fix" id="fixB" aria-pressed="false">
-        <div class="hd">B. Plan one seat shorter</div>
-        <div class="bd">
-          <div>The planner leaves 2 seats spare.</div>
-          <div class="mini" id="miniB"></div>
-          <div>The request runs, and the guard keeps its rule.</div>
-          <span class="stamp good">Our fix</span>
-        </div>
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- 5 -->
-<section class="beat" data-name="Proof" hidden>
-  <div class="say">
-    <span class="tag">Proving it</span>
-    <h1>Tests tried 6,345 cases. The proof covers <em>all of them.</em></h1>
-    <p class="lede">Each dot is one possible setup. Testing checks dots one at a time. A proof works more like algebra, so it covers every dot at once, including server sizes nobody has tried.</p>
-    <div class="two">
-      <div><small>Checked with</small>K prover</div>
-      <div><small>And again with</small>Lean</div>
-    </div>
-    <p class="foot-note">Two separate proof tools reached the same result.</p>
-  </div>
-  <div class="do">
-    <div class="dots"><canvas id="dots" width="900" height="380" aria-label="Grid of possible setups"></canvas></div>
-    <div class="row">
-      <button class="btn" id="runTests">Run 6,345 tests</button>
-      <button class="btn hot" id="runProof">Run the proof</button>
-      <button class="btn" id="clearDots">Clear</button>
-    </div>
-    <div class="dotkey">
-      <div><b id="dkTested">0</b>checked by tests</div>
-      <div><b id="dkProved">0</b>covered by the proof</div>
-      <div><b>2</b>cases to prove: short answers and long answers</div>
-    </div>
-  </div>
-</section>
-
-<!-- 6 -->
-<section class="beat" data-name="Break it" hidden>
-  <div class="say">
-    <span class="tag">Checking the checker</span>
-    <h1>We put the bug back to make sure the proof <span class="x">can fail</span></h1>
-    <p class="lede">Given the original code, the prover refused and named the exact stuck case: an answer 38 seats long, 1 seat spare, and the guard saying no. It's the same thing we saw on the real server.</p>
-    <p class="foot-note">The Lean version goes further and proves the old code fails for every request where memory sets the limit.</p>
+    <span class="tag">3 · What does formal verification catch?</span>
+    <h1>Every usual safety net missed it. <em>A proof doesn't.</em></h1>
+    <ul class="pts">
+      <li>We write the promise down as math: "everything the booking office sells, the conductor accepts."</li>
+      <li>A computer then checks it for <b>every possible case</b>, not a sample.</li>
+      <li class="hi">On the old code it fails at once and shows the exact stuck case: 38 seats saved for the reply, 1 empty, conductor says no.</li>
+      <li>Checked on every change, it would have failed the day the bug went in, before anyone was affected.</li>
+      <li class="ok">Our one-line fix passes, confirmed by two separate proof tools, K and Lean.</li>
+      <li>Still to do: we proved a hand-written copy of the math, not SGLang's own code. That's our next step.</li>
+    </ul>
   </div>
   <div class="do">
     <div class="row">
-      <button class="btn hot" id="vBad">Prove the original code</button>
-      <button class="btn" id="vGood">Prove the fixed code</button>
+      <button class="btn hot" id="breakIt">Make the change that caused the bug</button>
+      <button class="btn" id="fixIt">Apply our fix</button>
     </div>
-    <div class="verdicts">
-      <div class="vcard idle" id="cardBad">
-        <div class="hd"><span>Original code</span><span>task 524a9487</span></div>
-        <div class="big">Not proved</div>
-        <div class="bd">
-          <div>The prover found a case that gets stuck:</div>
-          <div class="trio"><div>Answer<b>38</b></div><div>Spare<b>1</b></div><div>Guard<b>No</b></div></div>
-          <div class="raw">result: <span class="y">notProved</span>  exit 1
-max_new_tokens = 38
-min_free_tokens = 1
-blocked = true</div>
-        </div>
-      </div>
-      <div class="vcard idle" id="cardGood">
-        <div class="hd"><span>Fixed code</span><span>task 75db8b39</span></div>
-        <div class="big">Proved</div>
-        <div class="bd">
-          <div>For every possible input:</div>
-          <div class="trio"><div>Spare<b>2+</b></div><div>Guard<b>Yes</b></div><div>Shortcuts<b>0</b></div></div>
-          <div class="raw">result: <span class="y">proved</span>  exit 0
-no extra assumptions added
-no shortcuts or depth limits</div>
-        </div>
-      </div>
+    <div class="nets" id="nets">
+      <div class="net"><div class="tx">Tests of the booking office<small>Does it fill the train correctly?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Tests of the conductor<small>Does it keep its safety rule?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Code review<small>Each change looks fine on its own</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Status light<small>Is the server up?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Everyday traffic<small>Short replies, busy servers</small></div><div class="st">waiting</div></div>
+      <div class="net proof"><div class="tx">Proof of the promise between them<small>Everything the office sells, the conductor accepts, in every case</small></div><div class="st">waiting</div></div>
     </div>
-  </div>
-</section>
-
-<!-- 7 -->
-<section class="beat" data-name="Limits + next" hidden>
-  <div class="say">
-    <span class="tag">Where we draw the line</span>
-    <h1>We proved the math. Next we prove the <em>real code.</em></h1>
-    <p class="lede">We wrote the fix's math out by hand from SGLang's code and proved it. We haven't yet proved that the hand-written math matches the code, or that the request finishes once it's let in.</p>
-    <div class="honest">
-      <div><small>Fair to say</small>We proved the fix's math is right for every input.</div>
-      <div><small>Not fair to say</small><span>We proved SGLang is fixed.</span></div>
-    </div>
-  </div>
-  <div class="do">
-    <p class="hint">Tap a box</p>
-    <div class="quad" id="quad">
-      <div class="ax"></div><div class="ax">Checks some cases</div><div class="ax">Checks every case</div>
-      <div class="ax v">Real code</div>
-      <button class="cell ps13" data-k="ps13"><b>LangGraph fix</b>Bug found by our prover and fixed upstream. The proof runs the real code for 4 cases.</button>
-      <button class="cell goal" data-k="goal"><b>Next</b>Real code, every case.</button>
-      <div class="ax v bot">Hand-written math</div>
-      <button class="cell" data-k="tests"><b>Unit tests</b>What most projects rely on.</button>
-      <button class="cell sgl" data-k="sgl"><b>This SGLang fix</b>Every case, on math written out from the code.</button>
-    </div>
-    <div class="detail" id="qd">Each proof so far gets half of what we want. The striped box needs both.</div>
+    <div class="caught" id="caught" hidden></div>
   </div>
 </section>
 
@@ -503,23 +465,14 @@ no shortcuts or depth limits</div>
   const T = 600, P = 1, R = 1;
   const plan = (I, M, fixed) => { const cap = fixed ? T - R : T; const G = Math.max(0, Math.min(M, cap - I - P - 1)); return { G, free: T - I - P - G }; };
 
-  /* ---------- navigation ---------- */
   const beats = $$('.beat'), N = beats.length;
   const notes = [
-    { say: "This is SGLang, an open-source server that runs AI models for lots of people at once. In our test, one request got to the front of the line and stayed there. Everything queued behind it waited, and the health check kept reporting that the server was fine, so no alarm would have gone off. The only thing that cleared it was removing that request by hand, which is also how we knew it was the cause.",
-      do: "Add a user or two and let them wait. Point at the green light and the refusal counter climbing. Then remove the stuck request and watch everyone get served." },
-    { say: "Think of the server's memory as a room with 600 seats, where every word the AI reads or writes needs one. Two pieces of code look at each request. The planner decides how long the answer can be, and it plans to leave exactly one seat spare. The guard at the door wants more than one spare seat before it lets anyone in. So the request gets turned away from a room with nobody else in it. Ask for a short answer and there's plenty of room, which is part of why this went unnoticed.",
-      do: "Drag the question length slowly so they see the yellow seat stay put. Then switch to a short answer and show that it gets in." },
-    { say: "The obvious workaround is a shorter question, and it doesn't work. Whatever seats you free up, the planner hands to the answer, so you're back to one spare seat. That holds for every question length and every server size, because the question length cancels out of the math. Waiting doesn't help either, since nobody is in the room to leave. As for why nobody caught it: you need a long-answer request, a memory cache that's normally on turned off, and an idle server, all at the same time. Short answers and busy servers never trigger it, and the health check stays green the whole time.",
-      do: "Move the dot along the flat line at 1. Then switch to the fix and the line moves up to 2." },
-    { say: "There are two quick ways to get the request through. You can relax the guard so it accepts one spare seat, or you can have the planner leave two. A test of the stuck request passes either way. But the guard's spare seat is there to absorb awkward cases in how memory gets handed out, and the first fix throws it away. We went with the second one. It's a one-line change, and the guard keeps its rule.",
-      do: "Click A, then B. This is the slide where a test can't tell right from wrong and a proof can." },
-    { say: "Each dot here is one possible setup: a server size, a question length, an answer length. Our tests ran the real SGLang code on 6,345 of them and every one passed, but that's still a sample. A proof works more like algebra. It shows the fix holds for every dot, including setups nobody has built yet. We split the space into short answers and long answers and proved each one. Then we did the whole thing a second time in Lean, a separate proof tool, and got the same result.",
-      do: "Run the tests first so they see the scattered dots. Then run the proof and let it fill the grid." },
-    { say: "We wanted to be sure the prover would actually say no to broken code, so we put the original line back and asked it to sign off. It refused, and it handed back the exact stuck case: an answer 38 seats long, one seat spare, and the guard saying no. That matches what we saw on the real server. The Lean proof goes a step further and shows the old code fails for every request where memory sets the limit, so this wasn't a one-off.",
-      do: "Click the original code first and point at 38, 1, No. Then click the fixed code." },
-    { say: "Here's where we draw the line. We wrote the fix's math out by hand from SGLang's code and proved that math correct. We've tested the real code a lot, but we haven't proved that our hand-written version matches it exactly, and we haven't proved the request finishes after it gets in. Our LangGraph work runs proofs on the real code, but only for a handful of cases. The striped box is what we're building next: proofs that run on the real code and cover every case.",
-      do: "Read the 'fair to say' line before anyone asks about it. Then click the striped box and end there." }
+    { say: "SGLang is free software that a lot of companies use to run AI chatbots for many people at once. We found a way for one request to get stuck at the front of the line. It never starts, and everyone behind it waits. Nothing crashes, there's no error message, and the status light stays green, so nobody gets paged. It doesn't happen often, but when it does the whole server is effectively down and nothing tells you.",
+      do: "Add a couple of users and let them wait. Point at the green light and the refusal counter. Then cancel the stuck request and everyone gets served." },
+    { say: "Picture the server's memory as a train with 600 seats. Two pieces of code have a say. The booking office decides how big your reservation is, and it fills the train so exactly one seat is left empty. The conductor has a safety rule: don't leave unless at least two seats are empty. Each rule makes sense. Put them together and the train never leaves, because nobody else is on board to get off and free a seat. It only happens with a request for the longest possible reply, on a quiet server, with one memory-saving feature turned off, so everyday use never runs into it. Each rule passed its own tests, and the promise to keep them in sync existed only as a comment in the code.",
+      do: "Drag the question length. The yellow empty seat never moves. Then pick a short reply and the train leaves." },
+    { say: "Formal verification means writing the promise down as math and having a computer check it for every possible case. The promise here is simple: everything the booking office sells, the conductor accepts. Click the button that makes the change that caused the bug. Every normal safety net stays green, because each piece still works by itself. The proof is the only one that goes red, and it points to the exact stuck case. If that check had been running, it would have failed the day the change went in. Our fix passes, and two separate proof tools agree. What's left is proving it on SGLang's own code instead of our hand-written copy of the math.",
+      do: "Click 'Make the change that caused the bug' and let the rows fill in. Pause on the red row. Then click 'Apply our fix'." }
   ];
   const blocks = $('#blocks');
   beats.forEach((b, i) => { const x = document.createElement('button'); x.textContent = (i + 1) + ' ' + b.dataset.name; x.onclick = () => go(i); blocks.appendChild(x); });
@@ -546,7 +499,7 @@ no shortcuts or depth limits</div>
   const hashGo = () => { const m = /^#slide-(\d+)$/.exec(location.hash); if (m) go(+m[1] - 1, true); };
   window.addEventListener('hashchange', hashGo);
 
-  /* ---------- 1 queue ---------- */
+  /* 1 queue */
   let q, served, uid, refused = 0;
   function resetQ() { const now = Date.now(); q = [{ n: 'A', stuck: true, t: now }, { n: 'B', t: now }, { n: 'C', t: now }]; served = 0; uid = 3; refused = 0; drawQ(); }
   function drawQ() {
@@ -566,7 +519,7 @@ no shortcuts or depth limits</div>
   resetQ();
   setInterval(() => { if (q.some(p => p.stuck && !p.gone)) refused++; drawQ(); }, 800);
 
-  /* ---------- 2 room ---------- */
+  /* 2 train */
   const room = $('#room');
   for (let k = 0; k < T; k++) room.appendChild(document.createElement('i'));
   const cells = [...room.children];
@@ -578,98 +531,28 @@ no shortcuts or depth limits</div>
     const ok = free > R;
     $('#tally').innerHTML =
       '<div><div class="k">Question</div><div class="v">' + I + '</div></div>' +
-      '<div><div class="k">Answer</div><div class="v">' + G + '</div></div>' +
-      '<div><div class="k">Spare</div><div class="v">' + free + '</div></div>' +
-      '<div class="' + (ok ? 'good' : 'bad') + '"><div class="k">Guard (needs 2+)</div><div class="v">' + (ok ? 'LET IN' : 'NO') + '</div></div>';
+      '<div><div class="k">Saved for reply</div><div class="v">' + G + '</div></div>' +
+      '<div><div class="k">Empty seats</div><div class="v">' + free + '</div></div>' +
+      '<div class="' + (ok ? 'good' : 'bad') + '"><div class="k">Conductor</div><div class="v">' + (ok ? 'DEPARTS' : 'WAITS') + '</div></div>';
   }
   $('#qLen').oninput = drawRoom;
   $$('#ansMode button').forEach(b => b.onclick = () => { ansMode = b.dataset.v; $$('#ansMode button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRoom(); });
   drawRoom();
 
-  /* ---------- 3 chart ---------- */
-  let chartFixed = false;
-  function drawChart() {
-    const I = +$('#cLen').value; $('#cLenO').textContent = I;
-    const W = 640, H = 330, L = 64, Rt = 20, Tp = 24, B = 54;
-    const x = v => L + v / 600 * (W - L - Rt), y = v => Tp + (4 - v) / 4 * (H - Tp - B);
-    const free = plan(I, 100000, chartFixed).free;
-    const F = 'font-family="IBM Plex Mono, monospace"';
-    let s = '<rect x="' + L + '" y="' + y(2) + '" width="' + (W - L - Rt) + '" height="' + (y(0) - y(2)) + '" fill="#ff2a00" fill-opacity="0.14"/>';
-    for (let v = 0; v <= 4; v++) s += '<line x1="' + L + '" x2="' + (W - Rt) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#000" stroke-opacity="' + (v === 0 ? 1 : .12) + '" stroke-width="' + (v === 0 ? 3 : 1) + '"/><text x="' + (L - 10) + '" y="' + (y(v) + 5) + '" text-anchor="end" font-size="14" font-weight="700" fill="#000" ' + F + '>' + v + '</text>';
-    for (let v = 0; v <= 600; v += 100) s += '<text x="' + x(v) + '" y="' + (H - B + 22) + '" text-anchor="middle" font-size="13" fill="#000" ' + F + '>' + v + '</text>';
-    s += '<line x1="' + L + '" x2="' + L + '" y1="' + Tp + '" y2="' + y(0) + '" stroke="#000" stroke-width="3"/>';
-    s += '<line x1="' + L + '" x2="' + (W - Rt) + '" y1="' + y(2) + '" y2="' + y(2) + '" stroke="#000" stroke-width="3" stroke-dasharray="10 6"/>';
-    s += '<text x="' + (W - Rt - 4) + '" y="' + (y(2) - 8) + '" text-anchor="end" font-size="13" font-weight="700" fill="#000" ' + F + '>GUARD NEEDS 2+</text>';
-    s += '<text x="' + (L + 8) + '" y="' + (y(0) - 8) + '" font-size="13" font-weight="700" fill="#ff2a00" ' + F + '>TURNED AWAY</text>';
-    const lv = chartFixed ? 2 : 1, col = chartFixed ? '#0038ff' : '#ff2a00';
-    s += '<line x1="' + x(0) + '" x2="' + x(590) + '" y1="' + y(lv) + '" y2="' + y(lv) + '" stroke="' + col + '" stroke-width="6"/>';
-    s += '<rect x="' + (x(I) - 9) + '" y="' + (y(free) - 9) + '" width="18" height="18" fill="#ffe500" stroke="#000" stroke-width="3"/>';
-    s += '<text x="' + Math.min(x(I) + 14, W - 130) + '" y="' + (y(free) - 16) + '" font-size="14" font-weight="700" fill="#000" ' + F + '>spare = ' + free + '</text>';
-    s += '<text x="' + ((L + W - Rt) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#000" ' + F + '>QUESTION LENGTH (of 600 seats)</text>';
-    s += '<text transform="translate(16 ' + ((Tp + y(0)) / 2) + ') rotate(-90)" text-anchor="middle" font-size="13" font-weight="700" fill="#000" ' + F + '>SPARE SEATS</text>';
-    $('#chart').innerHTML = s;
+  /* 3 safety nets */
+  let run = 0;
+  function nets(results, msg) {
+    const my = ++run; const st = $$('#nets .st');
+    st.forEach(s => { s.className = 'st'; s.textContent = 'checking'; });
+    $('#caught').hidden = true;
+    results.forEach((r, k) => setTimeout(() => {
+      if (my !== run) return;
+      st[k].className = 'st ' + (r ? 'pass' : 'fail'); st[k].textContent = r ? 'pass' : 'caught it';
+      if (k === results.length - 1) { $('#caught').innerHTML = msg; $('#caught').hidden = false; }
+    }, reduce ? 0 : 450 * (k + 1)));
   }
-  $('#cLen').oninput = drawChart;
-  $$('#chartMode button').forEach(b => b.onclick = () => { chartFixed = b.dataset.v === 'new'; $$('#chartMode button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawChart(); });
-  drawChart();
-
-  /* ---------- 4 fixes ---------- */
-  function mini(el, kind) {
-    const spec = kind === 'A' ? ['q','q','q','q','q','q','q','a','a','a','e','lost'] : ['q','q','q','q','q','q','q','a','a','e','e','e'];
-    el.innerHTML = spec.map(c => '<i class="' + c + '"></i>').join('');
-  }
-  mini($('#miniA'), 'A'); mini($('#miniB'), 'B');
-  ['A', 'B'].forEach(k => $('#fix' + k).onclick = () => {
-    ['A', 'B'].forEach(j => { $('#fix' + j).setAttribute('aria-pressed', String(j === k)); $('#fix' + j).classList.toggle('dim', j !== k); });
-  });
-
-  /* ---------- 5 dots ---------- */
-  const cv = $('#dots'), cx = cv.getContext('2d');
-  const COLS = 60, ROWS = 25, gw = cv.width / COLS, gh = cv.height / ROWS, split = 26;
-  let state = new Uint8Array(COLS * ROWS), anim = 0, tested = 0;
-  function drawDots() {
-    cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, cv.width, cv.height);
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const s = state[r * COLS + c];
-      if (s === 2) { cx.fillStyle = c < split ? '#ffe500' : '#0038ff'; cx.fillRect(c * gw, r * gh, gw + .5, gh + .5); continue; }
-      cx.beginPath(); cx.arc(c * gw + gw / 2, r * gh + gh / 2, s === 1 ? 5 : 2.2, 0, 7);
-      cx.fillStyle = s === 1 ? '#000000' : '#c9c9c3'; cx.fill();
-    }
-    if (state.some(v => v === 2)) {
-      cx.fillStyle = '#000'; cx.fillRect(split * gw - 2, 0, 4, cv.height);
-      cx.font = '700 22px "Archivo Black", Arial Black, sans-serif';
-      const lab = (t, x0, fg) => { const w = cx.measureText(t).width + 16; cx.fillStyle = '#000'; cx.fillRect(x0, 14, w, 36); cx.fillStyle = fg; cx.fillText(t, x0 + 8, 40); };
-      lab('SHORT ANSWERS', 14, '#ffe500');
-      lab('LONG ANSWERS', split * gw + 14, '#ffffff');
-    }
-  }
-  function counters() { $('#dkTested').textContent = tested ? '6,345' : '0'; $('#dkProved').textContent = state.some(v => v === 2) ? 'Every case' : '0'; }
-  $('#runTests').onclick = () => {
-    cancelAnimationFrame(anim); let n = 0;
-    const step = () => { for (let k = 0; k < 18; k++) { const i = Math.floor(Math.random() * state.length); if (state[i] === 0) state[i] = 1; } n++; drawDots(); if (n < (reduce ? 1 : 12)) anim = requestAnimationFrame(step); };
-    tested = 1; step(); counters();
-  };
-  $('#runProof').onclick = () => {
-    cancelAnimationFrame(anim); let c = 0;
-    const step = () => { for (let k = 0; k < 3 && c < COLS; k++, c++) for (let r = 0; r < ROWS; r++) state[r * COLS + c] = 2; drawDots(); counters(); if (c < COLS) anim = requestAnimationFrame(step); };
-    if (reduce) { state.fill(2); drawDots(); counters(); } else step();
-  };
-  $('#clearDots').onclick = () => { cancelAnimationFrame(anim); state = new Uint8Array(COLS * ROWS); tested = 0; drawDots(); counters(); };
-  drawDots();
-  if (document.fonts) document.fonts.ready.then(drawDots);
-
-  /* ---------- 6 verdicts ---------- */
-  $('#vBad').onclick = () => { $('#cardBad').className = 'vcard fail'; };
-  $('#vGood').onclick = () => { $('#cardGood').className = 'vcard pass'; };
-
-  /* ---------- 7 quadrant ---------- */
-  const qd = {
-    ps13: 'Our prover found this LangGraph bug, and it was fixed upstream. That proof runs the real Python code, but only for 4 chosen cases.',
-    goal: 'Proofs that run on the real code and cover every case, so nothing has to be written out by hand. This is what we are building.',
-    tests: 'Real code, chosen examples. Our 6,345 tests sit here. They catch a lot, and there are always cases they never try.',
-    sgl: 'Every possible input is covered. The catch is that we wrote the math out by hand, and that step is checked by review and tests, not by a proof.'
-  };
-  $$('#quad .cell').forEach(c => c.onclick = () => { $$('#quad .cell').forEach(x => x.setAttribute('aria-pressed', String(x === c))); $('#qd').textContent = qd[c.dataset.k]; });
+  $('#breakIt').onclick = () => nets([1, 1, 1, 1, 1, 0], 'The change: the conductor started counting one extra seat for paperwork, and the booking office was never updated. <b>Five safety nets stay green. Only the proof fails</b>, and it names the stuck case: 38 seats for the reply, 1 empty, conductor waits.');
+  $('#fixIt').onclick = () => nets([1, 1, 1, 1, 1, 1], 'With our fix the booking office leaves 2 seats empty. <b>The proof passes for every possible case</b>, checked by both K and Lean.');
 
   go(0, true); hashGo();
 })();
