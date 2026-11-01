@@ -1,0 +1,16 @@
+[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(52,27,52,29)
+[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(52,52,52,54)
+[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(53,27,53,29)
+[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(53,52,53,54)

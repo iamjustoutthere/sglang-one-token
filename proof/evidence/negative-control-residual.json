@@ -1,0 +1,29 @@
+{
+  "\"min_free_tokens\"": {
+    "node": "KToken",
+    "sort": {
+      "node": "KSort",
+      "name": "Int",
+      "params": []
+    },
+    "token": "1"
+  },
+  "\"max_new_tokens\"": {
+    "node": "KToken",
+    "sort": {
+      "node": "KSort",
+      "name": "Int",
+      "params": []
+    },
+    "token": "38"
+  },
+  "\"blocked\"": {
+    "node": "KToken",
+    "sort": {
+      "node": "KSort",
+      "name": "Bool",
+      "params": []
+    },
+    "token": "true"
+  }
+}

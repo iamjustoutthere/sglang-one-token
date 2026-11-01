@@ -1,0 +1,22 @@
+kore-exec: [3474348] Warning (WarnStuckClaimState):
+    The configuration's term doesn't unify with the destination's term and the configuration cannot be rewritten further. Location: /data/executions/1/524a9487-e4ae-440c-812a-ebde572fedf4/input/sglang06/mutation.k:5:5-21:18
+Context:
+    (InfoReachability) while checking the implication
+[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(52,27,52,29)
+[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(52,52,52,54)
+[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(53,27,53,29)
+[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name
+with underscore if this is intentional.
+	Source(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)
+	Location(53,52,53,54)
+[Error] Prover: backend terminated because the configuration cannot be
+rewritten further. See output for more details.

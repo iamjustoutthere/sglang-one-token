@@ -1,0 +1,37 @@
+{
+  "metrics": {},
+  "stderr": "[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name\nwith underscore if this is intentional.\n\tSource(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)\n\tLocation(52,27,52,29)\n[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name\nwith underscore if this is intentional.\n\tSource(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)\n\tLocation(52,52,52,54)\n[Warning] Compiler: Variable 'As' defined but not used. Prefix variable name\nwith underscore if this is intentional.\n\tSource(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)\n\tLocation(53,27,53,29)\n[Warning] Compiler: Variable 'Bs' defined but not used. Prefix variable name\nwith underscore if this is intentional.\n\tSource(/data/definitions/.7_1_337-haskell-minipy-d4d75049838b-none.9d5fe788-464d-4ace-9acc-3808bc9feec2/source/semantics/str.k)\n\tLocation(53,52,53,54)\n",
+  "stdout": "{\"format\":\"KAST\",\"version\":4,\"term\":{\"node\":\"KApply\",\"label\":{\"node\":\"KLabel\",\"name\":\"#Top\",\"params\":[{\"node\":\"KSort\",\"name\":\"K\",\"params\":[]}]},\"arity\":0,\"args\":[]}}",
+  "task": {
+    "createdAt": "2026-10-30T03:18:05.976062Z",
+    "definitionId": "7_1_337-haskell-minipy-d4d75049838b-none",
+    "error": null,
+    "filesExpireAt": "2026-11-02T03:18:34.568561Z",
+    "finishedAt": "2026-10-30T03:18:34.568561Z",
+    "id": "75db8b39-4050-4364-b256-0f526b591f0c",
+    "kept": false,
+    "kind": "proof",
+    "result": "proved",
+    "semantics": {
+      "commit": "d4d75049838b",
+      "id": "minipy"
+    },
+    "startedAt": "2026-10-30T03:18:07.498389Z",
+    "status": "completed",
+    "timing": {
+      "executionMilliseconds": 27070,
+      "queueMilliseconds": 1522,
+      "totalMilliseconds": 28592
+    },
+    "toolRuns": [
+      {
+        "durationMilliseconds": 27046,
+        "exitCode": 0,
+        "finishedAt": "2026-10-30T03:18:34.552418Z",
+        "outcome": "success",
+        "startedAt": "2026-10-30T03:18:07.506185Z",
+        "tool": "kprove"
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "language": "MiniPy",
+  "mainModule": "MPY-KRUN",
+  "syntaxModule": "MPY-SYNTAX",
+  "supportedOperations": ["run", "proof"]
+}
