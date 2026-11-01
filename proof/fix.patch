@@ -1,0 +1,26 @@
+--- a/python/sglang/srt/managers/scheduler.py
++++ b/python/sglang/srt/managers/scheduler.py
+@@ -218,6 +218,7 @@
+     retract_all,
+ )
+ from sglang.srt.managers.schedule_policy import (
++    IGNORE_EOS_RESERVE_TOKENS,
+     AddReqResult,
+     PrefillAdder,
+     SchedulePolicy,
+@@ -2715,6 +2716,15 @@
+             self.max_total_num_tokens * self.kv_shard_widening
+             - self.page_size * (self.kv_shard_widening - 1)
+         )
++        # The fixed-pool ignore_eos path requires free tokens to be strictly
++        # greater than its reserve, even for the first request on an empty pool.
++        if (
++            self.disable_radix_cache
++            and req.sampling_params.ignore_eos
++            and not self.is_hybrid_swa
++            and self.kv_shard_widening == 1
++        ):
++            token_capacity -= IGNORE_EOS_RESERVE_TOKENS
+         max_new_tokens = self.token_to_kv_pool_allocator.max_new_tokens_for_memory(
+             input_len,
+             max_new_tokens,
