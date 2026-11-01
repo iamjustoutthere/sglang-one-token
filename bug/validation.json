@@ -1,0 +1,13 @@
+{
+  "patch_application": "passed",
+  "recorded_witness_before": {
+    "output": 38,
+    "free": 1
+  },
+  "recorded_witness_after": {
+    "output": 37,
+    "free": 2
+  },
+  "source_extracted_cases": 6345,
+  "boundary": "actual scheduler intake and allocator clip; request objects and allocator dispatch stubbed; admission arithmetic checked independently"
+}
