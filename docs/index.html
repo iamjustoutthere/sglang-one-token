@@ -331,7 +331,7 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
 <header>
   <div class="strip">
     <div class="brand">One Token Wedge</div>
-    <div class="sub">A small bug that freezes an AI server, and how a proof catches it</div>
+    <div class="sub">A bug that freezes an AI server while it reports healthy, and the proof that catches it</div>
     <div class="count" id="count">1/3</div>
   </div>
   <nav class="blocks" id="blocks" aria-label="Slides" style="grid-template-columns: repeat(3, 1fr)"></nav>
@@ -343,13 +343,13 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
 <section class="beat" data-name="The problem">
   <div class="say">
     <span class="tag">1 · What is the problem?</span>
-    <h1>The AI server <span class="x">freezes</span> and says <em>"all good"</em></h1>
+    <h1>The server freezes while every check says it's <em>healthy</em></h1>
     <ul class="pts">
-      <li>SGLang is free software that companies use to run AI chatbots for many people at once.</li>
-      <li>One request can get stuck at the front of the line and never start.</li>
-      <li>Everyone behind it waits too. Nothing crashes and no error appears.</li>
-      <li class="hi">The status light stays <b>green</b>, so no alarm goes off.</li>
-      <li>The only way out is for a person to notice and cancel the stuck request.</li>
+      <li>One request gets stuck at the front of the line.</li>
+      <li>Everyone behind it waits, forever.</li>
+      <li class="hi">No crash, no error, status stays <b>green</b>.</li>
+      <li>That's worse than a crash. Crashes get noticed and restarted.</li>
+      <li>Only fix: a person spots it and cancels the request.</li>
     </ul>
   </div>
   <div class="do">
@@ -380,33 +380,32 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
 <section class="beat" data-name="When and why" hidden>
   <div class="say">
     <span class="tag">2 · When and why does it happen?</span>
-    <h1>Two sensible rules that can <span class="x">never both</span> be met</h1>
+    <h1>Two parts of the code disagree by <span class="x">one</span></h1>
     <span class="sec">Why</span>
     <ul class="pts">
-      <li>Think of the server's memory as a train with 600 seats.</li>
-      <li>The booking office fills it so that exactly <b>1 seat</b> stays empty.</li>
-      <li>The conductor only leaves when <b>2 or more</b> seats are empty.</li>
-      <li class="hi">Nobody else is on board, so nothing ever changes. The train never leaves.</li>
+      <li>Memory holds 600. The question takes 560.</li>
+      <li>Part 1 sizes the reply to 38, leaving <b>1 free</b>.</li>
+      <li>Part 2 only starts a request with <b>2 free</b>.</li>
+      <li class="hi">Nothing else is running, so nothing frees up. It retries forever.</li>
     </ul>
     <span class="sec">When</span>
     <ul class="pts">
-      <li>Someone asks for the longest possible reply, on a quiet server with one memory-saving feature switched off.</li>
+      <li>Longest-possible reply, idle server, memory cache off.</li>
     </ul>
     <span class="sec">Why nobody caught it</span>
     <ul class="pts">
-      <li>Each rule looks right alone and passed its own tests.</li>
-      <li>The promise to keep them in sync was only a code comment.</li>
-      <li>Everyday traffic never triggers it, and the light stays green.</li>
+      <li>Each part passes its own tests. The bug lives between them.</li>
+      <li>"Keep these consistent" was only a code comment.</li>
     </ul>
   </div>
   <div class="do">
     <div class="who2">
-      <div class="p"><b>Booking office</b><span>Fills the train, leaves 1 seat empty.</span></div>
-      <div class="g"><b>Conductor</b><span>Leaves only with 2 or more empty seats.</span></div>
+      <div class="p"><b>Part 1 · sizes the reply</b><span>Leaves 1 free.</span></div>
+      <div class="g"><b>Part 2 · starts the request</b><span>Needs 2 or more free.</span></div>
     </div>
-    <div class="legend"><span><i class="c-q"></i>Your question</span><span><i class="c-x"></i>Paperwork</span><span><i class="c-a"></i>Saved for the reply</span><span><i class="c-e"></i>Empty seat</span></div>
+    <div class="legend"><span><i class="c-q"></i>Question</span><span><i class="c-x"></i>Overhead</span><span><i class="c-a"></i>Reply</span><span><i class="c-e"></i>Free</span></div>
     <div class="room" id="room"></div>
-    <label class="slider"><span>Length of your question</span><input type="range" id="qLen" min="20" max="590" value="560"><output id="qLenO">560</output></label>
+    <label class="slider"><span>Question length</span><input type="range" id="qLen" min="20" max="590" value="560"><output id="qLenO">560</output></label>
     <div class="row"><span class="hint" style="margin:0">Reply wanted:</span>
       <div class="seg" id="ansMode"><button aria-pressed="true" data-v="max">As long as possible</button><button aria-pressed="false" data-v="short">Short</button></div>
     </div>
@@ -418,14 +417,14 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
 <section class="beat" data-name="What a proof catches" hidden>
   <div class="say">
     <span class="tag">3 · What does formal verification catch?</span>
-    <h1>Every usual safety net missed it. <em>A proof doesn't.</em></h1>
+    <h1>A promise in a comment can't be checked. <em>A promise in math can.</em></h1>
     <ul class="pts">
-      <li>We write the promise down as math: "everything the booking office sells, the conductor accepts."</li>
-      <li>A computer then checks it for <b>every possible case</b>, not a sample.</li>
-      <li class="hi">On the old code it fails at once and shows the exact stuck case: 38 seats saved for the reply, 1 empty, conductor says no.</li>
-      <li>Checked on every change, it would have failed the day the bug went in, before anyone was affected.</li>
-      <li class="ok">Our one-line fix passes, confirmed by two separate proof tools, K and Lean.</li>
-      <li>Still to do: we proved a hand-written copy of the math, not SGLang's own code. That's our next step.</li>
+      <li>The promise: whatever part 1 allows, part 2 accepts.</li>
+      <li>A prover checks it for <b>every</b> input, not a sample.</li>
+      <li class="hi">Old code: fails at once, names the stuck case (38 / 1 / no).</li>
+      <li class="ok">Our fix: passes. Two separate provers agree (K and Lean).</li>
+      <li>Checked on every change, it would have blocked this bug on day one.</li>
+      <li>Next: prove it on SGLang's real code, not our copy of the math.</li>
     </ul>
   </div>
   <div class="do">
@@ -434,12 +433,12 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
       <button class="btn" id="fixIt">Apply our fix</button>
     </div>
     <div class="nets" id="nets">
-      <div class="net"><div class="tx">Tests of the booking office<small>Does it fill the train correctly?</small></div><div class="st">waiting</div></div>
-      <div class="net"><div class="tx">Tests of the conductor<small>Does it keep its safety rule?</small></div><div class="st">waiting</div></div>
-      <div class="net"><div class="tx">Code review<small>Each change looks fine on its own</small></div><div class="st">waiting</div></div>
-      <div class="net"><div class="tx">Status light<small>Is the server up?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Tests of part 1<small>Does it size the reply right?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Tests of part 2<small>Does it keep its safety margin?</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Code review<small>Each change looks fine alone</small></div><div class="st">waiting</div></div>
+      <div class="net"><div class="tx">Health check<small>Is the server up?</small></div><div class="st">waiting</div></div>
       <div class="net"><div class="tx">Everyday traffic<small>Short replies, busy servers</small></div><div class="st">waiting</div></div>
-      <div class="net proof"><div class="tx">Proof of the promise between them<small>Everything the office sells, the conductor accepts, in every case</small></div><div class="st">waiting</div></div>
+      <div class="net proof"><div class="tx">Proof of the promise between them<small>Whatever part 1 allows, part 2 accepts, for every input</small></div><div class="st">waiting</div></div>
     </div>
     <div class="caught" id="caught" hidden></div>
   </div>
@@ -467,12 +466,9 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
 
   const beats = $$('.beat'), N = beats.length;
   const notes = [
-    { say: "SGLang is free software that a lot of companies use to run AI chatbots for many people at once. We found a way for one request to get stuck at the front of the line. It never starts, and everyone behind it waits. Nothing crashes, there's no error message, and the status light stays green, so nobody gets paged. It doesn't happen often, but when it does the whole server is effectively down and nothing tells you.",
-      do: "Add a couple of users and let them wait. Point at the green light and the refusal counter. Then cancel the stuck request and everyone gets served." },
-    { say: "Picture the server's memory as a train with 600 seats. Two pieces of code have a say. The booking office decides how big your reservation is, and it fills the train so exactly one seat is left empty. The conductor has a safety rule: don't leave unless at least two seats are empty. Each rule makes sense. Put them together and the train never leaves, because nobody else is on board to get off and free a seat. It only happens with a request for the longest possible reply, on a quiet server, with one memory-saving feature turned off, so everyday use never runs into it. Each rule passed its own tests, and the promise to keep them in sync existed only as a comment in the code.",
-      do: "Drag the question length. The yellow empty seat never moves. Then pick a short reply and the train leaves." },
-    { say: "Formal verification means writing the promise down as math and having a computer check it for every possible case. The promise here is simple: everything the booking office sells, the conductor accepts. Click the button that makes the change that caused the bug. Every normal safety net stays green, because each piece still works by itself. The proof is the only one that goes red, and it points to the exact stuck case. If that check had been running, it would have failed the day the change went in. Our fix passes, and two separate proof tools agree. What's left is proving it on SGLang's own code instead of our hand-written copy of the math.",
-      do: "Click 'Make the change that caused the bug' and let the rows fill in. Pause on the red row. Then click 'Apply our fix'." }
+    {"say": "SGLang is open-source software that runs AI models for many users at once. We found a case where one request gets stuck at the front of the line and never starts, and everyone behind it waits. Nothing crashes and no error shows up. The health check keeps saying the server is fine. That makes it worse than a crash, because a crash gets noticed and restarted. Here the only way out is for a person to spot it and cancel the stuck request.", "do": "Add a user or two and let them wait. Point at the green light and the refusal counter. Then cancel the stuck request."},
+    {"say": "Two parts of SGLang's code do slightly different math on the same memory. Say memory holds 600 tokens and the question takes 560. The first part sizes the reply at 38 tokens, which leaves exactly 1 free. The second part only starts a request when at least 2 are free. Normally you'd wait for another request to finish and free some memory, but nothing else is running, so it asks again, gets the same answer, and waits forever. A shorter question doesn't help, because the first part gives the freed space to the reply. It only happens with a longest-possible reply on an idle server with the memory cache off, and each part passes its own tests. The promise to keep them consistent was only a comment.", "do": "Drag the question length: the free count stays at 1. Then pick a short reply and it starts."},
+    {"say": "The bug is a broken promise between two pieces of code, and a promise written as a comment can't be checked. So we wrote it as math: whatever part 1 allows, part 2 accepts. A prover checks that for every possible input. Click the button that makes the change that caused the bug. Every normal check stays green, because each part still works on its own. Only the proof fails, and it names the exact stuck case. Our fix passes, and two separate provers agree. Next is proving it on SGLang's real code, not our hand-written copy of the math.", "do": "Click 'Make the change that caused the bug' and pause on the red row. Then click 'Apply our fix'."}
   ];
   const blocks = $('#blocks');
   beats.forEach((b, i) => { const x = document.createElement('button'); x.textContent = (i + 1) + ' ' + b.dataset.name; x.onclick = () => go(i); blocks.appendChild(x); });
@@ -531,9 +527,9 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
     const ok = free > R;
     $('#tally').innerHTML =
       '<div><div class="k">Question</div><div class="v">' + I + '</div></div>' +
-      '<div><div class="k">Saved for reply</div><div class="v">' + G + '</div></div>' +
-      '<div><div class="k">Empty seats</div><div class="v">' + free + '</div></div>' +
-      '<div class="' + (ok ? 'good' : 'bad') + '"><div class="k">Conductor</div><div class="v">' + (ok ? 'DEPARTS' : 'WAITS') + '</div></div>';
+      '<div><div class="k">Reply</div><div class="v">' + G + '</div></div>' +
+      '<div><div class="k">Free</div><div class="v">' + free + '</div></div>' +
+      '<div class="' + (ok ? 'good' : 'bad') + '"><div class="k">Part 2</div><div class="v">' + (ok ? 'STARTS' : 'WAITS') + '</div></div>';
   }
   $('#qLen').oninput = drawRoom;
   $$('#ansMode button').forEach(b => b.onclick = () => { ansMode = b.dataset.v; $$('#ansMode button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRoom(); });
@@ -551,8 +547,8 @@ h1 { font-size: clamp(26px, 3.1vw, 44px); }
       if (k === results.length - 1) { $('#caught').innerHTML = msg; $('#caught').hidden = false; }
     }, reduce ? 0 : 450 * (k + 1)));
   }
-  $('#breakIt').onclick = () => nets([1, 1, 1, 1, 1, 0], 'The change: the conductor started counting one extra seat for paperwork, and the booking office was never updated. <b>Five safety nets stay green. Only the proof fails</b>, and it names the stuck case: 38 seats for the reply, 1 empty, conductor waits.');
-  $('#fixIt').onclick = () => nets([1, 1, 1, 1, 1, 1], 'With our fix the booking office leaves 2 seats empty. <b>The proof passes for every possible case</b>, checked by both K and Lean.');
+  $('#breakIt').onclick = () => nets([1, 1, 1, 1, 1, 0], 'The change: part 2 started charging one extra token of overhead, and part 1 was never updated. <b>Five checks stay green. Only the proof fails</b>, and it names the stuck case: reply 38, 1 free, part 2 waits.');
+  $('#fixIt').onclick = () => nets([1, 1, 1, 1, 1, 1], 'Our fix: part 1 leaves 2 free. <b>The proof passes for every input</b>, in both K and Lean.');
 
   go(0, true); hashGo();
 })();
